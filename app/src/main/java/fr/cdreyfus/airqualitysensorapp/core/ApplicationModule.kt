@@ -23,13 +23,10 @@ val applicationModule = module {
 
     single {
 
-        val logInterceptor = HttpLoggingInterceptor { msg -> Timber.d(msg) }
-        logInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        val logInterceptor = HttpLoggingInterceptor()
+        logInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
 
         val okHttpClient = OkHttpClient.Builder()
-            .readTimeout(30, TimeUnit.SECONDS)
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
             .addInterceptor(logInterceptor)
             .build()
 
