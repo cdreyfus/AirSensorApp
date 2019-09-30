@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import fr.cdreyfus.airqualitysensorapp.BuildConfig
 import fr.cdreyfus.airqualitysensorapp.core.service.AdafruitApiService
-import fr.cdreyfus.airqualitysensorapp.ui.login.RemoteUserDataSource
+import fr.cdreyfus.airqualitysensorapp.core.service.AdafruitDataSource
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module.module
@@ -34,12 +34,12 @@ val applicationModule = module {
         Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
+            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").create()))
             .build()
             .create(AdafruitApiService::class.java)
     }
 
     single {
-        RemoteUserDataSource(adafruitApiService = get())
+        AdafruitDataSource(adafruitApiService = get())
     }
 }

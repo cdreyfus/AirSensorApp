@@ -5,6 +5,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import fr.cdreyfus.airqualitysensorapp.R
+import fr.cdreyfus.airqualitysensorapp.model.User
+import fr.cdreyfus.airqualitysensorapp.ui.data.DataActivity
 import kotlinx.android.synthetic.main.activity_login.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -25,10 +27,11 @@ class LoginActivity : AppCompatActivity() {
                 this,
                 user?.let { "Welcome ${user.name}" } ?: "Something went wrong...",
                 Toast.LENGTH_SHORT).show()
+
+            if (user != null)
+                startActivity(DataActivity.createIntent(this, user))
         }
 
-        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
         loginViewModel.user.observe(this, userObserver)
-
     }
 }
