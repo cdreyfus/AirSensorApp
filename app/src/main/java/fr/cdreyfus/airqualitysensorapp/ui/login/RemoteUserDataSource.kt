@@ -1,39 +1,24 @@
 package fr.cdreyfus.airqualitysensorapp.ui.login
 
 import androidx.lifecycle.MutableLiveData
-import fr.cdreyfus.airqualitysensorapp.core.AdafruitApiService
-import fr.cdreyfus.airqualitysensorapp.core.plusAssign
-import fr.cdreyfus.airqualitysensorapp.model.User
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
+import fr.cdreyfus.airqualitysensorapp.core.service.AdafruitApiService
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import timber.log.Timber
 
 class RemoteUserDataSource(private val adafruitApiService: AdafruitApiService) {
 
-    private val subscription = CompositeDisposable()
-    private val mutableLiveData = MutableLiveData<User>()
-
-    fun getUser(aioKey: String): User? {
-        var user: User? = null
-
-        subscription += adafruitApiService.getUser(aioKey)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnError {
-                Timber.e(it)
+    fun getUser(user: MutableLiveData<User>, aioKey: String) {
+        adafruitApiService.getUser(aioKey).enqueue(object : Callback<UserResponse> {
+            override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                Timber.e(t)
+                user.postValue(null)
             }
-            .doOnSuccess {
-                println(it)
-            }
-            .subscribe({ data ->
-                println(data.string())
-//                user = data
-            }, {
-                Timber.e(it)
-            })
-//        subscription.clear()
 
-        return user
+            override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+                user.postValue(response.body()?.user)
+            }
+        })
     }
 }

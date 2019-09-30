@@ -1,22 +1,15 @@
 package fr.cdreyfus.airqualitysensorapp.ui.login
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import fr.cdreyfus.airqualitysensorapp.model.User
 
 class LoginViewModel(private val remoteUserDataSource: RemoteUserDataSource) : ViewModel() {
 
+    private val _user = MutableLiveData<User>()
+    val user: LiveData<User> = _user
 
-    // Create a LiveData with a String
-    private val aioKey: MutableLiveData<String> by lazy { MutableLiveData<String>() }
-    val user: MutableLiveData<User> by lazy { MutableLiveData<User>() }
-
-
-    fun login(aioKey: String) {
-        this.aioKey.value = aioKey
-
-        val newUser = remoteUserDataSource.getUser(aioKey)
-        user.postValue(newUser)
-
+    fun login(key: String) {
+        remoteUserDataSource.getUser(_user, key)
     }
 }

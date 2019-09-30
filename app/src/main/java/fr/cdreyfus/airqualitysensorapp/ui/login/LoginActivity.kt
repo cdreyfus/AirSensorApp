@@ -5,7 +5,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import fr.cdreyfus.airqualitysensorapp.R
-import fr.cdreyfus.airqualitysensorapp.model.User
 import kotlinx.android.synthetic.main.activity_login.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -24,7 +23,7 @@ class LoginActivity : AppCompatActivity() {
         val userObserver = Observer<User?> { user ->
             Toast.makeText(
                 this,
-                user?.let { "Welcome ${user.username}" } ?: "Something went wrong...",
+                user?.let { "Welcome ${user.name}" } ?: "Something went wrong...",
                 Toast.LENGTH_SHORT).show()
         }
 

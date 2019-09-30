@@ -1,16 +1,14 @@
-package fr.cdreyfus.airqualitysensorapp.core
+package fr.cdreyfus.airqualitysensorapp.core.modules
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import fr.cdreyfus.airqualitysensorapp.BuildConfig
-import fr.cdreyfus.airqualitysensorapp.ui.login.LoginViewModel
+import fr.cdreyfus.airqualitysensorapp.core.service.AdafruitApiService
 import fr.cdreyfus.airqualitysensorapp.ui.login.RemoteUserDataSource
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.koin.androidx.viewmodel.ext.koin.viewModel
 import org.koin.dsl.module.module
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -24,7 +22,7 @@ val applicationModule = module {
     single {
 
         val logInterceptor = HttpLoggingInterceptor { msg -> Timber.d(msg) }
-        logInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        logInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
 
         val okHttpClient = OkHttpClient.Builder()
             .readTimeout(30, TimeUnit.SECONDS)
@@ -36,7 +34,6 @@ val applicationModule = module {
         Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
             .build()
             .create(AdafruitApiService::class.java)
@@ -44,9 +41,5 @@ val applicationModule = module {
 
     single {
         RemoteUserDataSource(adafruitApiService = get())
-    }
-
-    viewModel {
-        LoginViewModel(remoteUserDataSource = get())
     }
 }
