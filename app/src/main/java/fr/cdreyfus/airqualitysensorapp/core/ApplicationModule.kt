@@ -13,24 +13,29 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 val applicationModule = module {
 
     single {
         Gson()
     }
+
     single {
+
         val logInterceptor = HttpLoggingInterceptor { msg -> Timber.d(msg) }
         logInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
-        OkHttpClient.Builder().addInterceptor(logInterceptor).build()
-
-    }
-    single {
+        val okHttpClient = OkHttpClient.Builder()
+            .readTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor(logInterceptor)
+            .build()
 
         Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
-            .client(get())
+            .client(okHttpClient)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
             .build()

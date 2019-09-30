@@ -17,7 +17,7 @@ class RemoteUserDataSource(private val adafruitApiService: AdafruitApiService) {
     fun getUser(aioKey: String): User? {
         var user: User? = null
 
-        subscription += adafruitApiService.getUser()
+        subscription += adafruitApiService.getUser(aioKey)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnError {
@@ -27,7 +27,7 @@ class RemoteUserDataSource(private val adafruitApiService: AdafruitApiService) {
                 println(it)
             }
             .subscribe({ data ->
-                println(data)
+                println(data.string())
 //                user = data
             }, {
                 Timber.e(it)
