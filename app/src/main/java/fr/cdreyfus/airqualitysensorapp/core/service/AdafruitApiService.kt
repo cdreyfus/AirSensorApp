@@ -1,7 +1,7 @@
 package fr.cdreyfus.airqualitysensorapp.core.service
 
 import fr.cdreyfus.airqualitysensorapp.model.Feed
-import fr.cdreyfus.airqualitysensorapp.model.FeedDataPoint
+import fr.cdreyfus.airqualitysensorapp.model.FeedDataResponse
 import fr.cdreyfus.airqualitysensorapp.model.UserResponse
 import retrofit2.Call
 import retrofit2.http.GET
@@ -21,7 +21,7 @@ interface AdafruitApiService {
     @GET("/api/v2/{username}/feeds/{feed_key}/data")
     fun getFeedDataByKey(
         @Header("X-AIO-Key") aioKey: String,
-        @Path("username") username: String, @Path("feed_key") feedKey: String, @Query("limit") limit: Int = 10
-    ): Call<List<FeedDataPoint>>
+        @Path("username") username: String, @Path("feed_key") feedKey: String, @Query("start_time") limit: String = "2019-09-02T14:25"
+    ): Call<List<FeedDataResponse>>
 
 }
