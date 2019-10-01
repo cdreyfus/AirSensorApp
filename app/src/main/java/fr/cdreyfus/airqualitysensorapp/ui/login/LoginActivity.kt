@@ -19,7 +19,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         login_button.setOnClickListener {
-            loginViewModel.login(io_key_edittext.text.toString())
+            loginViewModel.login(aio_key_edittext.text.toString())
         }
 
         val userObserver = Observer<User?> { user ->

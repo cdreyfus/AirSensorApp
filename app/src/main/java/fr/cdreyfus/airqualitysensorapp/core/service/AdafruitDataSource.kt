@@ -1,61 +1,58 @@
 package fr.cdreyfus.airqualitysensorapp.core.service
 
-import androidx.lifecycle.MutableLiveData
 import fr.cdreyfus.airqualitysensorapp.model.Feed
 import fr.cdreyfus.airqualitysensorapp.model.FeedDataPoint
-import fr.cdreyfus.airqualitysensorapp.model.User
 import fr.cdreyfus.airqualitysensorapp.model.UserResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import timber.log.Timber
 
 class AdafruitDataSource(private val adafruitApiService: AdafruitApiService) {
 
-    fun getUser(user: MutableLiveData<User>, aioKey: String) {
-        adafruitApiService.getUser(aioKey).enqueue(object : Callback<UserResponse> {
-            override fun onFailure(call: Call<UserResponse>, t: Throwable) {
-                Timber.e(t)
-                user.postValue(null)
-            }
-
-            override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
-                val newUser = response.body()?.user?.copy(aioKey = aioKey)
-                user.postValue(newUser)
-            }
-        })
+    fun getUser(
+        aioKey: String,
+        handleSuccess: (UserResponse?) -> Unit,
+        handleFail: (Throwable) -> Unit
+    ) {
+        adafruitApiService.getUser(aioKey).enqueue(handleResponse(handleSuccess, handleFail))
     }
 
-    fun getFeedsList(feedList: MutableLiveData<List<Feed>>, username: String, aioKey: String) {
-
-        adafruitApiService.getFeedsList(aioKey, username).enqueue(object : Callback<List<Feed>> {
-            override fun onFailure(call: Call<List<Feed>>, t: Throwable) {
-                Timber.e(t)
-                feedList.postValue(emptyList())
-            }
-
-            override fun onResponse(call: Call<List<Feed>>, response: Response<List<Feed>>) {
-                feedList.postValue(response.body())
-            }
-
-        })
+    fun getFeedsList(
+        username: String,
+        aioKey: String,
+        handleSuccess: (List<Feed>?) -> Unit,
+        handleFail: (Throwable) -> Unit
+    ) {
+        adafruitApiService.getFeedsList(aioKey, username)
+            .enqueue(handleResponse(handleSuccess, handleFail))
     }
 
-    fun getFeedData(username: String, aioKey: String, feedKey: String) {
+    fun getFeedData(
+        username: String,
+        aioKey: String,
+        feedKey: String,
+        handleSuccess: (List<FeedDataPoint>?) -> Unit,
+        handleFail: (Throwable) -> Unit
+    ) {
         adafruitApiService.getFeedDataByKey(aioKey, username, feedKey)
-            .enqueue(object : Callback<List<FeedDataPoint>> {
-                override fun onFailure(call: Call<List<FeedDataPoint>>, t: Throwable) {
-                    Timber.e(t)
-                }
+            .enqueue(handleResponse(handleSuccess, handleFail))
 
-                override fun onResponse(
-                    call: Call<List<FeedDataPoint>>,
-                    response: Response<List<FeedDataPoint>>
-                ) {
-                    println(response.body())
-                }
+    }
 
-            })
+}
 
+private fun <T> handleResponse(
+    handleSuccess: (T?) -> Unit,
+    handleFail: (Throwable) -> Unit
+): Callback<T> {
+    return object : Callback<T> {
+        override fun onFailure(call: Call<T>, t: Throwable) {
+            handleFail(t)
+        }
+
+        override fun onResponse(call: Call<T>, response: Response<T>) {
+            handleSuccess(response.body())
+        }
     }
 }
+

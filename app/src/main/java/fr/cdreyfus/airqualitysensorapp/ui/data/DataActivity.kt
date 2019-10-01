@@ -54,7 +54,7 @@ class DataActivity : AppCompatActivity() {
         }
 
         dataViewModel.feedKey.observe(this, feedKeyObserver)
-        dataViewModel.feeds.observe(this, feedsObserver)
+        dataViewModel.feedList.observe(this, feedsObserver)
     }
 
     companion object {
