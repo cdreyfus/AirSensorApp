@@ -1,7 +1,7 @@
 package fr.cdreyfus.airqualitysensorapp.core.service
 
 import fr.cdreyfus.airqualitysensorapp.model.Feed
-import fr.cdreyfus.airqualitysensorapp.model.FeedDataPoint
+import fr.cdreyfus.airqualitysensorapp.model.FeedDataResponse
 import fr.cdreyfus.airqualitysensorapp.model.UserResponse
 import retrofit2.Call
 import retrofit2.Callback
@@ -31,7 +31,7 @@ class AdafruitDataSource(private val adafruitApiService: AdafruitApiService) {
         username: String,
         aioKey: String,
         feedKey: String,
-        handleSuccess: (List<FeedDataPoint>?) -> Unit,
+        handleSuccess: (List<FeedDataResponse>?) -> Unit,
         handleFail: (Throwable) -> Unit
     ) {
         adafruitApiService.getFeedDataByKey(aioKey, username, feedKey)

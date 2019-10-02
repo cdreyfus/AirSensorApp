@@ -20,7 +20,7 @@ class DataViewModel(val adafruitDataSource: AdafruitDataSource) : ViewModel() {
     val feedList: LiveData<List<Feed>> = _feedList
 
     private val _feedData = MutableLiveData<List<FeedDataPoint>>()
-    val feedData = _feedData
+    val feedData: LiveData<List<FeedDataPoint>> = _feedData
 
     fun setUser(newUser: User) {
         user.value = newUser
@@ -50,10 +50,19 @@ class DataViewModel(val adafruitDataSource: AdafruitDataSource) : ViewModel() {
         adafruitDataSource.getFeedData(
             user.username,
             user.aioKey,
-            feedKey, {
-                feedData.postValue(it.orEmpty())
+            feedKey, { data ->
+                val points = mutableListOf<FeedDataPoint>()
+                data?.forEach {
+                    points.add(
+                        FeedDataPoint(
+                            value = it.value.toFloat(),
+                            created_at = it.created_at.time.toFloat()
+                        )
+                    )
+                }
+                _feedData.postValue(points)
             }, {
-                feedData.postValue(emptyList())
+                _feedData.postValue(emptyList())
             }
         )
     }
